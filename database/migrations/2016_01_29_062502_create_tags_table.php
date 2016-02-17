@@ -19,13 +19,13 @@ class CreateTagsTable extends Migration {
 			$table->timestamps();
 		});
 
-		Schema::create('article_tag', function(Blueprint $table)
+		Schema::create('articles_tag', function(Blueprint $table)
 		{
-			$table->integer('article_id')->unsigned()->index();
+			$table->integer('articles_id')->unsigned()->index();
 			$table->integer('tag_id')->unsigned()->index();
 			$table->timestamps();
 
-			$table->foreign('article_id')->references('id')->on('articles')->onDelete('cascade');
+			$table->foreign('articles_id')->references('id')->on('articles')->onDelete('cascade');
 			$table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
 		});
 

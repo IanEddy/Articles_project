@@ -11,7 +11,12 @@ class AppServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		//
+		view()->composer('pages.nav', function($view)
+		{
+			$view->with('latest',\App\Articles::latest()->first());
+		}
+
+			);
 	}
 
 	/**

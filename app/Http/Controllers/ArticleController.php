@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use App\Articles;
+use App\Tag;
 use Illuminate\Http\Request;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Controllers\Controller;
@@ -26,9 +27,9 @@ class ArticleController extends Controller {
 	{
 		//return \Auth::user()->name;
 		$articles= Articles::latest()->get();
+		$latest = Articles::latest()->first();
 
-		return view('pages.articles')->with('articles',$articles);
-		
+		return view('pages.articles',compact('articles','latest'));		
 
 	}
 	/**
@@ -38,7 +39,9 @@ class ArticleController extends Controller {
 	 */
 	public function create()
 	{
-		return view('pages.create');
+		$tags = Tag::lists('name','id');
+		
+		return view('pages.create')->with('tags',$tags);
 	}
 
 	/**
@@ -48,8 +51,10 @@ class ArticleController extends Controller {
 	 */
 	public function store(ArticleRequest $request)
 	{
-		//$articles= new Articles($request->all());
-		Auth::user()->articles()->create($request->all());
+		
+		$articles = Auth::user()->articles()->create($request->all());
+
+		$articles->tags()->attach($request->input('tag_list'));
 
 		\Session::flash('flash_message','The article has been created');
 
@@ -77,8 +82,8 @@ class ArticleController extends Controller {
 	 */
 	public function edit(Articles $articles)
 	{
-		//$articles= Articles::findorfail($id);
-		return view ('pages.edit')->with('articles',$articles);
+		$tags = Tag::lists('name','id');
+		return view ('pages.edit',compact('articles','tags'));
 	}
 
 	/**
@@ -92,6 +97,7 @@ class ArticleController extends Controller {
 		//$articles= Articles::findorfail($id);
 
 		$articles->update($request->all());
+		$articles->tags()->sync($request->input('tag_list'));
 
 		return redirect('articles'); 
 	}
